@@ -51,7 +51,20 @@ TOOL_SERVER_PID=$!
 echo $TOOL_SERVER_PID > /tmp/tool_server.pid
 echo -e "${GREEN}✓ Tool Server 已启动 (PID: $TOOL_SERVER_PID)${NC}"
 echo -e "${GREEN}  日志文件: /tmp/tool_server.log${NC}"
-sleep 3
+
+# 等待 Tool Server 启动
+echo "等待 Tool Server 就绪..."
+for i in {1..30}; do
+    if curl -s "http://127.0.0.1:8102/?Version=2020-04-01&Action=GetScreenSize" > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ Tool Server 已就绪${NC}"
+        break
+    fi
+    if [ $i -eq 30 ]; then
+        echo -e "${RED}✗ Tool Server 启动超时${NC}"
+        exit 1
+    fi
+    sleep 1
+done
 
 # 2. 启动 MCP Server
 echo ""
@@ -77,7 +90,11 @@ MCP_SERVER_PID=$!
 echo $MCP_SERVER_PID > /tmp/mcp_server.pid
 echo -e "${GREEN}✓ MCP Server 已启动 (PID: $MCP_SERVER_PID)${NC}"
 echo -e "${GREEN}  日志文件: /tmp/mcp_server.log${NC}"
+
+# 等待 MCP Server 启动
+echo "等待 MCP Server 就绪..."
 sleep 3
+echo -e "${GREEN}✓ MCP Server 已就绪${NC}"
 
 # 3. 启动 Planner
 echo ""
@@ -101,7 +118,20 @@ PLANNER_PID=$!
 echo $PLANNER_PID > /tmp/planner.pid
 echo -e "${GREEN}✓ Planner 已启动 (PID: $PLANNER_PID)${NC}"
 echo -e "${GREEN}  日志文件: /tmp/planner.log${NC}"
-sleep 3
+
+# 等待 Planner 启动
+echo "等待 Planner 就绪..."
+for i in {1..30}; do
+    if curl -s "http://127.0.0.1:8089/health" > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ Planner 已就绪${NC}"
+        break
+    fi
+    if [ $i -eq 30 ]; then
+        echo -e "${RED}✗ Planner 启动超时${NC}"
+        exit 1
+    fi
+    sleep 1
+done
 
 # 4. 启动 Frontend
 echo ""
@@ -122,10 +152,24 @@ echo $FRONTEND_PID > /tmp/frontend.pid
 echo -e "${GREEN}✓ Frontend 已启动 (PID: $FRONTEND_PID)${NC}"
 echo -e "${GREEN}  日志文件: /tmp/frontend.log${NC}"
 
-# 等待服务启动
-echo ""
-echo -e "${YELLOW}等待所有服务启动...${NC}"
-sleep 5
+# 等待 Frontend 启动
+echo "等待 Frontend 就绪..."
+for i in {1..60}; do
+    if curl -s "http://localhost:3000/api/get-env" > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ Frontend 已就绪 (http://localhost:3000)${NC}"
+        FRONTEND_PORT=3000
+        break
+    elif curl -s "http://localhost:3001/api/get-env" > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ Frontend 已就绪 (http://localhost:3001)${NC}"
+        FRONTEND_PORT=3001
+        break
+    fi
+    if [ $i -eq 60 ]; then
+        echo -e "${RED}✗ Frontend 启动超时${NC}"
+        exit 1
+    fi
+    sleep 1
+done
 
 # 显示服务状态
 echo ""
@@ -137,10 +181,10 @@ echo -e "${GREEN}服务列表:${NC}"
 echo -e "  1. Tool Server:   http://127.0.0.1:8102 (PID: $TOOL_SERVER_PID)"
 echo -e "  2. MCP Server:    http://127.0.0.1:8000 (PID: $MCP_SERVER_PID)"
 echo -e "  3. Planner:       http://127.0.0.1:8089 (PID: $PLANNER_PID)"
-echo -e "  4. Frontend:      http://127.0.0.1:3000 (PID: $FRONTEND_PID)"
+echo -e "  4. Frontend:      http://127.0.0.1:${FRONTEND_PORT:-3000} (PID: $FRONTEND_PID)"
 echo ""
 echo -e "${GREEN}访问前端界面:${NC}"
-echo -e "  ${YELLOW}http://localhost:3000${NC}"
+echo -e "  ${YELLOW}http://localhost:${FRONTEND_PORT:-3000}${NC}"
 echo ""
 echo -e "${YELLOW}查看日志:${NC}"
 echo -e "  tail -f /tmp/tool_server.log"

@@ -25,7 +25,7 @@ import { FC, useEffect, useRef, useState } from "react";
 import { useSnapshot } from "valtio";
 import { runTask } from "@/services/planner";
 import { IconStop } from "@arco-design/web-react/icon";
-import { IconCaretDown, IconCaretLeft } from "@arco-design/web-react/icon";
+import { IconCaretDown, IconCaretLeft, IconRight } from "@arco-design/web-react/icon";
 
 const getActionNameFromText = (text: string) => {
   return text.split("(")[0]?.trim();
@@ -216,7 +216,16 @@ export const LeftPanel: FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-md">
+    <div className="flex flex-col h-full bg-white rounded-lg shadow-sm relative">
+      {/* 隐藏按钮 */}
+      <button
+        onClick={() => actions.setLeftPanelVisible(false)}
+        className="absolute -right-6 top-1/2 -translate-y-1/2 w-6 h-12 bg-white rounded-r-md shadow-md hover:bg-gray-50 flex items-center justify-center transition-colors z-10 border border-l-0 border-gray-200"
+        title="隐藏聊天面板"
+      >
+        <IconRight className="text-gray-600 text-sm" />
+      </button>
+
       <div className="flex-1 overflow-y-auto px-3 pt-16 pb-3">
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full text-slate-400 text-sm">
@@ -239,9 +248,9 @@ export const LeftPanel: FC = () => {
                   }`}
                 >
                   <div
-                    className={`rounded-md ${
+                    className={`rounded-lg ${
                       message.sender === "assistant" ? "" : "bg-[#F3F7FF]"
-                    } p-[6px_8px]`}
+                    } p-[6px_8px] transition-all hover:shadow-sm`}
                   >
                     <MessageContent
                       message={message}

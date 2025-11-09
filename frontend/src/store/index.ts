@@ -69,6 +69,7 @@ export interface AppState {
   systemPrompt: string;
   maximized: boolean; // 桌面最大化
   rightPanelVisible: boolean; // 右侧面板可见性
+  leftPanelVisible: boolean; // 左侧面板可见性
   pollSandboxListTimer?: NodeJS.Timeout;
   canCreateSandbox: boolean;
   checkingLogin: boolean;
@@ -95,6 +96,7 @@ const initialState: AppState = {
   systemPrompt: defaultSystemPrompt,
   maximized: false,
   rightPanelVisible: true,
+  leftPanelVisible: true,
   canCreateSandbox: false,
   checkingLogin: true,
   loggedIn: false,
@@ -317,6 +319,14 @@ export const actions = {
 
   toggleRightPanel: () => {
     store.rightPanelVisible = !store.rightPanelVisible;
+  },
+
+  setLeftPanelVisible: (visible: boolean) => {
+    store.leftPanelVisible = visible;
+  },
+
+  toggleLeftPanel: () => {
+    store.leftPanelVisible = !store.leftPanelVisible;
   },
 
   startPollSandboxList: () => {

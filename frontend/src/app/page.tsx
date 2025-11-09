@@ -30,11 +30,11 @@ import { PromptEditor } from "@/components/prompt-editor";
 import { getEnv } from "@/services/env";
 import { useEmbedded } from "@/hooks/use-embedded";
 
-const LocalDeviceInfo = dynamic(
-  () => import("@/components/local-device-info"),
+const DeviceManager = dynamic(
+  () => import("@/components/device-manager").then(mod => ({ default: mod.DeviceManager })),
   {
     loading: () => (
-      <div className="h-full w-full flex flex-col bg-white rounded-md shadow-sm p-4">
+      <div className="h-full w-full flex flex-col bg-white rounded-lg shadow-sm p-4">
         <Skeleton />
       </div>
     ),
@@ -45,7 +45,7 @@ const TabPane = Tabs.TabPane;
 
 function Home() {
   const isEmbedded = useEmbedded();
-  const { maximized, rightPanelVisible } = useSnapshot(store);
+  const { maximized, rightPanelVisible, leftPanelVisible } = useSnapshot(store);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [message, messageHolder] = Message.useMessage();
@@ -75,16 +75,44 @@ function Home() {
     <div className="page flex flex-col h-[calc(100vh-var(--scrollbar-height))] bg-slate-50 min-w-[1200px] overflow-x-auto">
       {messageHolder}
       {!isEmbedded && <Header />}
-      <div className="flex flex-row flex-1 overflow-hidden background bg-[#FFFFFF80]">
+      <div className="flex flex-row flex-1 overflow-hidden background bg-[#FFFFFF80] relative">
         {/* 左侧面板 */}
-        {maximized ? null : (
-          <div className="w-1/5 p-4 pr-0 pt-6 flex-shrink-0">
+        {maximized ? null : leftPanelVisible ? (
+          <div className="w-1/5 p-4 pr-0 pt-6 flex-shrink-0 transition-all duration-300">
             <LeftPanel />
           </div>
+        ) : null}
+
+        {/* 显示左侧面板按钮（当面板隐藏时） */}
+        {!maximized && !leftPanelVisible && (
+          <button
+            onClick={() => actions.setLeftPanelVisible(true)}
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-20 bg-white rounded-r-lg shadow-lg hover:shadow-xl flex flex-col items-center justify-center transition-all duration-200 z-10 border border-l-0 border-gray-200 group hover:w-10"
+            title="显示聊天面板"
+          >
+            <svg
+              className="w-5 h-5 text-gray-500 group-hover:text-indigo-600 transition-colors mb-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+            <div className="flex flex-col gap-0.5">
+              <div className="w-1 h-1 bg-gray-400 rounded-full group-hover:bg-indigo-600 transition-colors"></div>
+              <div className="w-1 h-1 bg-gray-400 rounded-full group-hover:bg-indigo-600 transition-colors"></div>
+              <div className="w-1 h-1 bg-gray-400 rounded-full group-hover:bg-indigo-600 transition-colors"></div>
+            </div>
+          </button>
         )}
 
         {/* 主要内容区域 */}
-        <div className={`${maximized ? "w-full" : "w-4/5"} flex flex-col flex-shrink-0`}>
+        <div className={`${maximized ? "w-full" : leftPanelVisible ? "w-4/5" : "w-full"} flex flex-col flex-shrink-0 transition-all duration-300`}>
             <div className="flex flex-col flex-1 px-4 py-4">
               <Tabs
                 justify
@@ -115,10 +143,10 @@ function Home() {
                       <DesktopDisplay onCreateInstance={handleCreateInstance} />
                     </div>
 
-                    {/* 右侧状态信息区域 */}
+                    {/* 右侧设备管理区域 */}
                     {!maximized && rightPanelVisible && (
                       <div className="w-[22%] h-full min-w-[297px] transition-all duration-300">
-                        <LocalDeviceInfo />
+                        <DeviceManager />
                       </div>
                     )}
 
@@ -127,7 +155,7 @@ function Home() {
                       <button
                         onClick={() => actions.setRightPanelVisible(true)}
                         className="absolute right-0 top-1/2 -translate-y-1/2 w-6 h-12 bg-white rounded-l-md shadow-md hover:bg-gray-50 flex items-center justify-center transition-colors z-10 border border-r-0 border-gray-200"
-                        title="显示侧边栏"
+                        title="显示设备管理"
                       >
                         <svg
                           className="w-4 h-4 text-gray-600"

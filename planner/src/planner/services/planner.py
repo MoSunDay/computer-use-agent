@@ -38,6 +38,7 @@ MODEL_TOOL_CALL_ADAPTER_MAP = {
         MODEL_DOUBAO_UI_TARS: DoubaoUITarsToComputerUseMCPAdaptor,
         # 支持直接使用模型 endpoint ID
         # 示例: "ep-xxxxx-xxxxx": DoubaoUITarsToComputerUseMCPAdaptor
+        "ep-20251109220115-bcfdj": DoubaoUITarsToComputerUseMCPAdaptor,
     }
 }
 

@@ -28,7 +28,7 @@ export const Header: FC = () => {
             <span className="font-[Roboto] font-medium text-base leading-6 tracking-[0.3%] text-[#0C0D0E]">
               Computer Use Agent
             </span>
-            <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+            <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-md shadow-sm">
               本地模式
             </span>
           </Link>

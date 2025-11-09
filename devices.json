@@ -1,0 +1,14 @@
+{
+  "devices": [
+    {
+      "id": "local-sandbox",
+      "name": "本地 macOS",
+      "ip": "127.0.0.1",
+      "port": 8102,
+      "osType": "Darwin",
+      "status": "RUNNING",
+      "description": "本地开发机器"
+    }
+  ]
+}
+

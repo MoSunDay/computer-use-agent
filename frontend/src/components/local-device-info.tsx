@@ -92,7 +92,7 @@ export const LocalDeviceInfo: FC = () => {
   };
 
   return (
-    <div className="h-full w-full flex flex-col bg-white rounded-md shadow-sm relative">
+    <div className="h-full w-full flex flex-col bg-white rounded-lg shadow-sm relative">
       {/* 隐藏按钮 */}
       <button
         onClick={() => actions.setRightPanelVisible(false)}
